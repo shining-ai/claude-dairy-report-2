@@ -7,6 +7,7 @@ import { getCustomers } from '../api/customers';
 import ErrorMessage from '../components/ErrorMessage';
 
 interface VisitFormRow {
+  tempId: string;
   visit_id?: number;
   customer_id: string;
   visit_content: string;
@@ -45,6 +46,7 @@ const ReportEditPage: React.FC = () => {
       setPlan(report.plan ?? '');
       setVisits(
         report.visits.map((v) => ({
+          tempId: crypto.randomUUID(),
           visit_id: v.visit_id,
           customer_id: String(v.customer.customer_id),
           visit_content: v.visit_content,
@@ -161,7 +163,7 @@ const ReportEditPage: React.FC = () => {
   };
 
   const addVisitRow = () => {
-    setVisits([...visits, { customer_id: '', visit_content: '', isNew: true }]);
+    setVisits([...visits, { tempId: crypto.randomUUID(), customer_id: '', visit_content: '', isNew: true }]);
   };
 
   const removeVisitRow = (index: number) => {
@@ -170,6 +172,14 @@ const ReportEditPage: React.FC = () => {
 
   const updateVisitField = (index: number, field: 'customer_id' | 'visit_content', value: string) => {
     setVisits(visits.map((v, i) => (i === index ? { ...v, [field]: value } : v)));
+  };
+
+  const moveVisit = (index: number, direction: 'up' | 'down') => {
+    const newVisits = [...visits];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newVisits.length) return;
+    [newVisits[index], newVisits[targetIndex]] = [newVisits[targetIndex], newVisits[index]];
+    setVisits(newVisits);
   };
 
   const isLoading =
@@ -258,7 +268,7 @@ const ReportEditPage: React.FC = () => {
 
         {visits.map((visit, index) => (
           <div
-            key={index}
+            key={visit.tempId}
             style={{
               border: '1px solid #e5e7eb',
               borderRadius: '6px',
@@ -271,15 +281,33 @@ const ReportEditPage: React.FC = () => {
               <span style={{ fontSize: '14px', fontWeight: '600', color: '#374151' }}>
                 訪問 {index + 1}
               </span>
-              {visits.length > 1 && (
+              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                 <button
                   type="button"
-                  onClick={() => removeVisitRow(index)}
-                  style={{ ...buttonStyle, backgroundColor: '#fff', color: '#dc2626', borderColor: '#dc2626', padding: '4px 12px', fontSize: '12px' }}
+                  onClick={() => moveVisit(index, 'up')}
+                  disabled={index === 0}
+                  style={{ ...buttonStyle, backgroundColor: '#fff', color: '#374151', borderColor: '#d1d5db', padding: '4px 10px', fontSize: '12px', opacity: index === 0 ? 0.4 : 1, cursor: index === 0 ? 'not-allowed' : 'pointer' }}
                 >
-                  削除
+                  ↑
                 </button>
-              )}
+                <button
+                  type="button"
+                  onClick={() => moveVisit(index, 'down')}
+                  disabled={index === visits.length - 1}
+                  style={{ ...buttonStyle, backgroundColor: '#fff', color: '#374151', borderColor: '#d1d5db', padding: '4px 10px', fontSize: '12px', opacity: index === visits.length - 1 ? 0.4 : 1, cursor: index === visits.length - 1 ? 'not-allowed' : 'pointer' }}
+                >
+                  ↓
+                </button>
+                {visits.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeVisitRow(index)}
+                    style={{ ...buttonStyle, backgroundColor: '#fff', color: '#dc2626', borderColor: '#dc2626', padding: '4px 12px', fontSize: '12px' }}
+                  >
+                    削除
+                  </button>
+                )}
+              </div>
             </div>
             <div style={{ marginBottom: '12px' }}>
               <label style={labelStyle}>

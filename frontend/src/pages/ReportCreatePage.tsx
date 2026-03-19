@@ -7,6 +7,7 @@ import { getCustomers } from '../api/customers';
 import ErrorMessage from '../components/ErrorMessage';
 
 interface VisitFormRow {
+  tempId: string;
   customer_id: string;
   visit_content: string;
 }
@@ -16,7 +17,7 @@ const ReportCreatePage: React.FC = () => {
   const navigate = useNavigate();
   const today = new Date().toISOString().slice(0, 10);
 
-  const [visits, setVisits] = useState<VisitFormRow[]>([{ customer_id: '', visit_content: '' }]);
+  const [visits, setVisits] = useState<VisitFormRow[]>([{ tempId: crypto.randomUUID(), customer_id: '', visit_content: '' }]);
   const [problem, setProblem] = useState('');
   const [plan, setPlan] = useState('');
   const [error, setError] = useState('');
@@ -98,15 +99,23 @@ const ReportCreatePage: React.FC = () => {
   };
 
   const addVisitRow = () => {
-    setVisits([...visits, { customer_id: '', visit_content: '' }]);
+    setVisits([...visits, { tempId: crypto.randomUUID(), customer_id: '', visit_content: '' }]);
   };
 
   const removeVisitRow = (index: number) => {
     setVisits(visits.filter((_, i) => i !== index));
   };
 
-  const updateVisit = (index: number, field: keyof VisitFormRow, value: string) => {
+  const updateVisit = (index: number, field: 'customer_id' | 'visit_content', value: string) => {
     setVisits(visits.map((v, i) => (i === index ? { ...v, [field]: value } : v)));
+  };
+
+  const moveVisit = (index: number, direction: 'up' | 'down') => {
+    const newVisits = [...visits];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newVisits.length) return;
+    [newVisits[index], newVisits[targetIndex]] = [newVisits[targetIndex], newVisits[index]];
+    setVisits(newVisits);
   };
 
   const isLoading = createMutation.isPending || submitMutation.isPending;
@@ -186,7 +195,7 @@ const ReportCreatePage: React.FC = () => {
 
         {visits.map((visit, index) => (
           <div
-            key={index}
+            key={visit.tempId}
             style={{
               border: '1px solid #e5e7eb',
               borderRadius: '6px',
@@ -199,15 +208,33 @@ const ReportCreatePage: React.FC = () => {
               <span style={{ fontSize: '14px', fontWeight: '600', color: '#374151' }}>
                 訪問 {index + 1}
               </span>
-              {visits.length > 1 && (
+              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                 <button
                   type="button"
-                  onClick={() => removeVisitRow(index)}
-                  style={{ ...buttonStyle, backgroundColor: '#fff', color: '#dc2626', borderColor: '#dc2626', padding: '4px 12px', fontSize: '12px' }}
+                  onClick={() => moveVisit(index, 'up')}
+                  disabled={index === 0}
+                  style={{ ...buttonStyle, backgroundColor: '#fff', color: '#374151', borderColor: '#d1d5db', padding: '4px 10px', fontSize: '12px', opacity: index === 0 ? 0.4 : 1, cursor: index === 0 ? 'not-allowed' : 'pointer' }}
                 >
-                  削除
+                  ↑
                 </button>
-              )}
+                <button
+                  type="button"
+                  onClick={() => moveVisit(index, 'down')}
+                  disabled={index === visits.length - 1}
+                  style={{ ...buttonStyle, backgroundColor: '#fff', color: '#374151', borderColor: '#d1d5db', padding: '4px 10px', fontSize: '12px', opacity: index === visits.length - 1 ? 0.4 : 1, cursor: index === visits.length - 1 ? 'not-allowed' : 'pointer' }}
+                >
+                  ↓
+                </button>
+                {visits.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeVisitRow(index)}
+                    style={{ ...buttonStyle, backgroundColor: '#fff', color: '#dc2626', borderColor: '#dc2626', padding: '4px 12px', fontSize: '12px' }}
+                  >
+                    削除
+                  </button>
+                )}
+              </div>
             </div>
             <div style={{ marginBottom: '12px' }}>
               <label style={labelStyle}>

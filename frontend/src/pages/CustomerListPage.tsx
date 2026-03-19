@@ -23,7 +23,7 @@ const CustomerListPage: React.FC = () => {
   const deleteMutation = useMutation({
     mutationFn: deleteCustomer,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['customers'] });
+      queryClient.invalidateQueries({ queryKey: ['customers'], exact: false });
     },
   });
 
