@@ -1,1 +1,2 @@
-// ミドルウェアはPhase2以降で実装予定
+export { authenticate, requireRole } from './auth';
+export { errorHandler, AppError } from './errorHandler';
