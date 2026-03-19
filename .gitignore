@@ -28,8 +28,9 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
-# Prisma
-prisma/migrations/
+# Prisma (migrations はバージョン管理対象)
+prisma/migrations/**/*.db
+prisma/migrations/**/*.db-journal
 
 # テストカバレッジ
 coverage/
