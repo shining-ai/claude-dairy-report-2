@@ -82,12 +82,18 @@ export async function listReports(
 
   const statusFilter = query.status ? { status: query.status } : {};
 
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  const parsedDateFrom =
+    query.date_from && dateRegex.test(query.date_from) ? new Date(query.date_from) : undefined;
+  const parsedDateTo =
+    query.date_to && dateRegex.test(query.date_to) ? new Date(query.date_to) : undefined;
+
   const dateFilter =
-    query.date_from || query.date_to
+    parsedDateFrom || parsedDateTo
       ? {
           reportDate: {
-            ...(query.date_from ? { gte: new Date(query.date_from) } : {}),
-            ...(query.date_to ? { lte: new Date(query.date_to) } : {}),
+            ...(parsedDateFrom ? { gte: parsedDateFrom } : {}),
+            ...(parsedDateTo ? { lte: parsedDateTo } : {}),
           },
         }
       : {};
