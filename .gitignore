@@ -1,0 +1,35 @@
+# 環境変数
+.env
+.env.local
+.env.*.local
+
+# 依存パッケージ
+node_modules/
+
+# ビルド成果物
+dist/
+build/
+
+# TypeScript
+*.tsbuildinfo
+
+# ログ
+logs/
+*.log
+npm-debug.log*
+
+# エディタ
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Prisma
+prisma/migrations/
+
+# テストカバレッジ
+coverage/

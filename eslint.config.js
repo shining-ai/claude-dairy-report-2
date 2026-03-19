@@ -1,5 +1,6 @@
 import tseslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
+import prettierConfig from "eslint-config-prettier";
 
 /** @type {import("eslint").Linter.Config[]} */
 export default [
@@ -49,4 +50,6 @@ export default [
       curly: ["error", "all"],
     },
   },
+  // Prettier との競合ルールを無効化
+  prettierConfig,
 ];
