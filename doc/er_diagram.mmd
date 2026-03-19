@@ -1,0 +1,59 @@
+erDiagram
+    USER {
+        int user_id PK
+        string name "氏名"
+        string email "メールアドレス"
+        string password_hash "パスワードハッシュ"
+        string role "sales | manager"
+        string department "部署"
+        datetime created_at
+        datetime updated_at
+    }
+
+    CUSTOMER {
+        int customer_id PK
+        string company_name "会社名"
+        string contact_name "担当者名"
+        string phone "電話番号"
+        string email "メールアドレス"
+        string address "住所"
+        text notes "備考"
+        datetime created_at
+        datetime updated_at
+    }
+
+    DAILY_REPORT {
+        int report_id PK
+        int user_id FK "営業担当者"
+        date report_date "日報日付"
+        text problem "課題・相談"
+        text plan "明日やること"
+        string status "draft | submitted | reviewed"
+        datetime created_at
+        datetime updated_at
+    }
+
+    VISIT_RECORD {
+        int visit_id PK
+        int report_id FK
+        int customer_id FK
+        text visit_content "訪問内容"
+        int sort_order "表示順"
+        datetime created_at
+        datetime updated_at
+    }
+
+    COMMENT {
+        int comment_id PK
+        int report_id FK
+        int user_id FK "コメントした上長"
+        text comment_text "コメント内容"
+        datetime created_at
+        datetime updated_at
+    }
+
+    USER ||--o{ DAILY_REPORT : "作成する"
+    USER ||--o{ COMMENT : "コメントする"
+    DAILY_REPORT ||--o{ VISIT_RECORD : "含む"
+    DAILY_REPORT ||--o{ COMMENT : "コメントされる"
+    CUSTOMER ||--o{ VISIT_RECORD : "訪問される"
