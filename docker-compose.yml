@@ -34,13 +34,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    # generate → migrate → seed（冪等） → 開発サーバー起動
+    # generate → db push（マイグレーションファイル不要） → seed（失敗しても続行） → 開発サーバー起動
     command: >
       sh -c "
         npx prisma generate &&
-        npx prisma migrate deploy &&
-        npx tsx prisma/seed.ts &&
-        npm run dev
+        npx prisma db push --accept-data-loss &&
+        (npx tsx prisma/seed.ts; npm run dev)
       "
 
   frontend:
