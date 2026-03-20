@@ -13,6 +13,7 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
+    "postinstall": "prisma generate",
     "prepare": "husky",
     "test": "vitest run",
     "test:watch": "vitest",

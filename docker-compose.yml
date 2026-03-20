@@ -34,9 +34,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    # migrate → seed（冪等） → 開発サーバー起動
+    # generate → migrate → seed（冪等） → 開発サーバー起動
     command: >
       sh -c "
+        npx prisma generate &&
         npx prisma migrate deploy &&
         npx tsx prisma/seed.ts &&
         npm run dev
